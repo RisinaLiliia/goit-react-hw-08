@@ -49,6 +49,7 @@ export default function LoginForm() {
                   label="Email"
                   fullWidth
                   type="email"
+                  autoComplete="email" 
                   error={Boolean(errors.email && touched.email)}
                   helperText={errors.email && touched.email && errors.email}
                   variant="outlined"
@@ -66,6 +67,7 @@ export default function LoginForm() {
                   label="Password"
                   fullWidth
                   type="password"
+                   autoComplete="current-password"
                   error={Boolean(errors.password && touched.password)}
                   helperText={
                     errors.password && touched.password && errors.password

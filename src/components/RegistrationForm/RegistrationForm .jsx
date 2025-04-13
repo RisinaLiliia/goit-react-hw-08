@@ -85,6 +85,7 @@ export default function RegistrationForm() {
                     label="Password"
                     fullWidth
                     type="password"
+                    autocomplete="new-password"
                     error={Boolean(errors.password && touched.password)}
                     helperText={
                       errors.password && touched.password && errors.password

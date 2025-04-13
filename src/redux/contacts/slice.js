@@ -1,7 +1,7 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { selectContactsFilter } from "../filters/selectors";
 import { selectAllContacts } from "./selectors";
-import { fetchContacts, addContact, deleteContact } from "./operations";
+import { fetchContacts, addContact, deleteContact, updateContact } from "./operations";
 
 export const selectFilteredContacts = createSelector(
   [selectAllContacts, selectContactsFilter],
@@ -55,6 +55,12 @@ const contactsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(updateContact.fulfilled, (state, action) => {
+        const index = state.items.findIndex(contact => contact.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+      })
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.items = state.items.filter(
           (contact) => contact.id !== action.payload.id
@@ -64,3 +70,4 @@ const contactsSlice = createSlice({
 });
 
 export default contactsSlice.reducer;
+

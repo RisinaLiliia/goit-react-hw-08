@@ -2,7 +2,8 @@ import { useDispatch } from "react-redux";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { register } from "../../redux/auth/operations";
-import { TextField, Button, Box, CircularProgress } from "@mui/material";
+import { TextField, Button, Box, CircularProgress, InputAdornment } from "@mui/material";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import css from "./RegistrationForm.module.css";
 
 const registerSchema = Yup.object().shape({
@@ -11,7 +12,10 @@ const registerSchema = Yup.object().shape({
     .email("Invalid email format")
     .required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
     .required("Password is required"),
 });
 
@@ -25,7 +29,6 @@ export default function RegistrationForm() {
         actions.resetForm();
       })
       .catch((error) => {
-        console.error("Registration failed:", error);
         actions.setFieldError("email", error.message || "Registration failed.");
       });
   };
@@ -45,7 +48,7 @@ export default function RegistrationForm() {
           <Form className={css.form} autoComplete="off">
             <Box className={css.fieldContainer}>
               <Field name="name">
-                {({ field, form }) => (
+                {({ field }) => (
                   <TextField
                     {...field}
                     label="Username"
@@ -54,7 +57,13 @@ export default function RegistrationForm() {
                     helperText={errors.name && touched.name && errors.name}
                     variant="outlined"
                     className={css.inputField}
-                    autoFocus
+                    InputProps={{
+                      endAdornment: !errors.name && touched.name ? (
+                        <InputAdornment position="end">
+                          <CheckCircleIcon style={{ color: 'green' }} />
+                        </InputAdornment>
+                      ) : null,
+                    }}
                   />
                 )}
               </Field>
@@ -62,7 +71,7 @@ export default function RegistrationForm() {
 
             <Box className={css.fieldContainer}>
               <Field name="email">
-                {({ field, form }) => (
+                {({ field }) => (
                   <TextField
                     {...field}
                     label="Email"
@@ -72,6 +81,13 @@ export default function RegistrationForm() {
                     helperText={errors.email && touched.email && errors.email}
                     variant="outlined"
                     className={css.inputField}
+                    InputProps={{
+                      endAdornment: !errors.email && touched.email ? (
+                        <InputAdornment position="end">
+                          <CheckCircleIcon style={{ color: 'green' }} />
+                        </InputAdornment>
+                      ) : null,
+                    }}
                   />
                 )}
               </Field>
@@ -79,19 +95,24 @@ export default function RegistrationForm() {
 
             <Box className={css.fieldContainer}>
               <Field name="password">
-                {({ field, form }) => (
+                {({ field }) => (
                   <TextField
                     {...field}
                     label="Password"
                     fullWidth
                     type="password"
-                    autocomplete="new-password"
+                    autoComplete="new-password"
                     error={Boolean(errors.password && touched.password)}
-                    helperText={
-                      errors.password && touched.password && errors.password
-                    }
+                    helperText={errors.password && touched.password && errors.password}
                     variant="outlined"
                     className={css.inputField}
+                    InputProps={{
+                      endAdornment: !errors.password && touched.password ? (
+                        <InputAdornment position="end">
+                          <CheckCircleIcon style={{ color: 'green' }} />
+                        </InputAdornment>
+                      ) : null,
+                    }}
                   />
                 )}
               </Field>

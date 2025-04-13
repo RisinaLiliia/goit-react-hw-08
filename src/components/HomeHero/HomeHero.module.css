@@ -1,0 +1,43 @@
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  color: #1976d2;
+  text-transform: uppercase;
+  padding: 20px;
+}
+
+.description {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+  padding: 20px;
+}
+
+.list {
+  list-style: none;
+  text-align: left;
+  padding: 20px;
+  margin: 0;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.icon {
+  color: #1976d2;
+  margin-right: 10px;
+  font-size: 20px;
+  min-width: 24px;
+}
+
+.footer {
+  margin-top: 20px;
+  font-size: 16px;
+  padding: 20px;
+}

@@ -57,6 +57,8 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
   showLogOutToast();
 });
 
+
+
 export const refreshUser = createAsyncThunk(
   "auth/refresh",
   async (_, thunkAPI) => {

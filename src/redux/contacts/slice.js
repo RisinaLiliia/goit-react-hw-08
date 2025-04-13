@@ -1,6 +1,7 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { selectContactsFilter } from "../filters/selectors";
 import { selectAllContacts } from "./selectors";
+import { logOut } from "../auth/operations";
 import { fetchContacts, addContact, deleteContact, updateContact } from "./operations";
 
 export const selectFilteredContacts = createSelector(
@@ -65,6 +66,11 @@ const contactsSlice = createSlice({
         state.items = state.items.filter(
           (contact) => contact.id !== action.payload.id
         );
+      })
+      .addCase(logOut.fulfilled, (state) => {
+        state.items = [];    
+        state.error = null;
+        state.loading = false;
       });
   },
 });

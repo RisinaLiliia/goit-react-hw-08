@@ -64,6 +64,7 @@ export default function ContactForm() {
     >
       {({ errors, touched }) => (
         <Form className={css.form}>
+            <h4> Add new contacts:</h4>
           <Box className={css.group}>
             <Field name="name">
               {({ field }) => (

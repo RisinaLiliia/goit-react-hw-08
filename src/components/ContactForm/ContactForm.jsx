@@ -1,9 +1,14 @@
 import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addContact } from "../../redux/contacts/operations";
 import { resetFilter } from "../../redux/filters/slice";
+import { selectAllContacts } from "../../redux/contacts/selectors";
+import {
+  showNameAlreadyExistsToast,
+  showNumberAlreadyExistsToast,
+} from "../../utils/toasts";
 import { TextField, Button, Box } from "@mui/material";
 import css from "./ContactForm.module.css";
 
@@ -19,9 +24,34 @@ const UserSchema = Yup.object().shape({
 
 export default function ContactForm() {
   const dispatch = useDispatch();
+  const contacts = useSelector(selectAllContacts);
 
   const handleSubmit = (values, actions) => {
-    dispatch(addContact({ name: values.name, number: values.number }));
+    const { name, number } = values;
+
+    const normalizedName = name.trim().toLowerCase();
+    const normalizedNumber = number.replace(/[^0-9]/g, "");
+
+    const nameMatch = contacts.find(
+      contact => contact.name.trim().toLowerCase() === normalizedName
+    );
+
+    if (nameMatch) {
+      showNameAlreadyExistsToast(nameMatch.name);
+      return;
+    }
+
+    const numberMatch = contacts.find(
+      contact =>
+        contact.number && contact.number.replace(/[^0-9]/g, "") === normalizedNumber
+    );
+
+    if (numberMatch) {
+      showNumberAlreadyExistsToast(numberMatch.name, numberMatch.number);
+      return;
+    }
+
+    dispatch(addContact({ name, number }));
     dispatch(resetFilter());
     actions.resetForm();
   };
@@ -44,7 +74,7 @@ export default function ContactForm() {
                   fullWidth
                   error={Boolean(errors.name && touched.name)}
                   helperText={<ErrorMessage name="name" />}
-                  autoComplete="name" 
+                  autoComplete="name"
                 />
               )}
             </Field>
@@ -60,7 +90,7 @@ export default function ContactForm() {
                   fullWidth
                   error={Boolean(errors.number && touched.number)}
                   helperText={<ErrorMessage name="number" />}
-                  autoComplete="tel" 
+                  autoComplete="tel"
                 />
               )}
             </Field>
@@ -80,3 +110,4 @@ export default function ContactForm() {
     </Formik>
   );
 }
+

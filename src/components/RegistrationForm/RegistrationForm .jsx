@@ -2,8 +2,16 @@ import { useDispatch } from "react-redux";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { register } from "../../redux/auth/operations";
-import { TextField, Button, Box, CircularProgress, InputAdornment } from "@mui/material";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import {
+  TextField,
+  Button,
+  Box,
+  CircularProgress,
+  InputAdornment,
+  Typography,
+  Paper,
+} from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import css from "./RegistrationForm.module.css";
 
 const registerSchema = Yup.object().shape({
@@ -27,25 +35,49 @@ export default function RegistrationForm() {
       .unwrap()
       .then(() => {
         actions.resetForm();
+        actions.setSubmitting(false);
       })
       .catch((error) => {
-        actions.setFieldError("email", error.message || "Registration failed.");
+        const message = error?.toLowerCase?.() || "";
+        if (message.includes("email") || message.includes("user")) {
+          actions.setFieldError(
+            "email",
+            "This email is already registered. Please use a different email or log in."
+          );
+        } else {
+          actions.setStatus("Registration failed. Please try again later.");
+        }
+        actions.setSubmitting(false);
       });
   };
 
   return (
-    <Box className={css.container}>
+    <Paper elevation={3} className={css.container}>
+      <Typography variant="h4" component="h1" gutterBottom align="center">
+        Create Account
+      </Typography>
+      <Typography variant="body1" align="center" gutterBottom>
+        Please fill in the form to create a new account.
+      </Typography>
+
       <Formik
-        initialValues={{
-          name: "",
-          email: "",
-          password: "",
-        }}
+        initialValues={{ name: "", email: "", password: "" }}
         validationSchema={registerSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, touched, isSubmitting }) => (
-          <Form className={css.form} autoComplete="off">
+        {({ errors, touched, isSubmitting, status }) => (
+          <Form className={css.form} autoComplete="off" noValidate>
+            {status && (
+              <Typography
+                variant="body2"
+                color="error"
+                align="center"
+                sx={{ mb: 2 }}
+              >
+                {status}
+              </Typography>
+            )}
+
             <Box className={css.fieldContainer}>
               <Field name="name">
                 {({ field }) => (
@@ -54,13 +86,12 @@ export default function RegistrationForm() {
                     label="Username"
                     fullWidth
                     error={Boolean(errors.name && touched.name)}
-                    helperText={errors.name && touched.name && errors.name}
+                    helperText={touched.name && errors.name}
                     variant="outlined"
-                    className={css.inputField}
                     InputProps={{
                       endAdornment: !errors.name && touched.name ? (
                         <InputAdornment position="end">
-                          <CheckCircleIcon style={{ color: 'green' }} />
+                          <CheckCircleIcon style={{ color: "green" }} />
                         </InputAdornment>
                       ) : null,
                     }}
@@ -78,13 +109,12 @@ export default function RegistrationForm() {
                     fullWidth
                     type="email"
                     error={Boolean(errors.email && touched.email)}
-                    helperText={errors.email && touched.email && errors.email}
+                    helperText={touched.email && errors.email}
                     variant="outlined"
-                    className={css.inputField}
                     InputProps={{
                       endAdornment: !errors.email && touched.email ? (
                         <InputAdornment position="end">
-                          <CheckCircleIcon style={{ color: 'green' }} />
+                          <CheckCircleIcon style={{ color: "green" }} />
                         </InputAdornment>
                       ) : null,
                     }}
@@ -103,13 +133,12 @@ export default function RegistrationForm() {
                     type="password"
                     autoComplete="new-password"
                     error={Boolean(errors.password && touched.password)}
-                    helperText={errors.password && touched.password && errors.password}
+                    helperText={touched.password && errors.password}
                     variant="outlined"
-                    className={css.inputField}
                     InputProps={{
                       endAdornment: !errors.password && touched.password ? (
                         <InputAdornment position="end">
-                          <CheckCircleIcon style={{ color: 'green' }} />
+                          <CheckCircleIcon style={{ color: "green" }} />
                         </InputAdornment>
                       ) : null,
                     }}
@@ -135,6 +164,7 @@ export default function RegistrationForm() {
           </Form>
         )}
       </Formik>
-    </Box>
+    </Paper>
   );
 }
+

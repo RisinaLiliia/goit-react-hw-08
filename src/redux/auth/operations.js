@@ -2,9 +2,7 @@ import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   showLoginSuccessToast,
-  showLoginErrorToast,
   showRegisterSuccessToast,
-  showRegisterErrorToast,
   showLogOutToast,
 } from "../../utils/toasts";
 
@@ -27,8 +25,9 @@ export const register = createAsyncThunk(
       showRegisterSuccessToast();
       return response.data;
     } catch (error) {
-      showRegisterErrorToast();
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Registration failed"
+      );
     }
   }
 );
@@ -44,8 +43,9 @@ export const logIn = createAsyncThunk(
       showLoginSuccessToast();
       return response.data;
     } catch (error) {
-      showLoginErrorToast();
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Login failed"
+      );
     }
   }
 );
@@ -56,8 +56,6 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
   setAuthHeader("");
   showLogOutToast();
 });
-
-
 
 export const refreshUser = createAsyncThunk(
   "auth/refresh",

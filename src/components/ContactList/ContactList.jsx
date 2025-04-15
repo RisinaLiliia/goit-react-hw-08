@@ -7,6 +7,12 @@ import css from "./ContactList.module.css";
 export default function ContactList() {
   const filteredContacts = useSelector(selectFilteredContacts);
 
+  if (filteredContacts.length === 0) {
+    return (
+      <p className={css.emptyMessage}>No contacts found.</p>
+    );
+  }
+
   return (
     <ul className={css.ContactList}>
       {filteredContacts.map((contact) => (

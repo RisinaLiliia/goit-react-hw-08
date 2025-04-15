@@ -1,23 +1,25 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { changeFilter } from "../../redux/filters/slice";
-import { TextField, Box, InputAdornment } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import { selectContactsFilter } from "../../redux/filters/selectors";
+import { TextField, Box, InputAdornment, Typography } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import css from "./SearchBox.module.css";
-
 
 export default function SearchBox() {
   const dispatch = useDispatch();
   const query = useSelector(selectContactsFilter);
 
-  const handleChange = (e) => {
-    dispatch(changeFilter(e.target.value));
+  const handleChange = (event) => {
+    dispatch(changeFilter(event.target.value));
   };
 
   return (
-    <Box sx={{ mb: 2 }} className={css.searchBox} >
-      <h4> Search contacts:</h4>
+    <Box sx={{ mb: 2 }} className={css.searchBox}>
+      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+        Search contacts:
+      </Typography>
+
       <TextField
         id="search-input"
         value={query}

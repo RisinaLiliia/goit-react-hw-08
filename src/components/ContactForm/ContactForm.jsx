@@ -1,15 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { addContact } from "../../redux/contacts/operations";
 import { resetFilter } from "../../redux/filters/slice";
 import { selectAllContacts } from "../../redux/contacts/selectors";
-import {
-  showNameAlreadyExistsToast,
-  showNumberAlreadyExistsToast,
-} from "../../utils/toasts";
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Box, Typography, Alert } from "@mui/material";
 import css from "./ContactForm.module.css";
 
 const UserSchema = Yup.object().shape({
@@ -25,35 +21,43 @@ const UserSchema = Yup.object().shape({
 export default function ContactForm() {
   const dispatch = useDispatch();
   const contacts = useSelector(selectAllContacts);
+  const [formError, setFormError] = useState("");
 
-  const handleSubmit = (values, actions) => {
+  const handleSubmit = async (values, actions) => {
     const { name, number } = values;
-
     const normalizedName = name.trim().toLowerCase();
     const normalizedNumber = number.replace(/[^0-9]/g, "");
 
     const nameMatch = contacts.find(
-      contact => contact.name.trim().toLowerCase() === normalizedName
+      (contact) => contact.name.trim().toLowerCase() === normalizedName
     );
 
     if (nameMatch) {
-      showNameAlreadyExistsToast(nameMatch.name);
+      setFormError(`The name "${name}" already exists in your contacts.`);
       return;
     }
 
     const numberMatch = contacts.find(
-      contact =>
-        contact.number && contact.number.replace(/[^0-9]/g, "") === normalizedNumber
+      (contact) =>
+        contact.number &&
+        contact.number.replace(/[^0-9]/g, "") === normalizedNumber
     );
 
     if (numberMatch) {
-      showNumberAlreadyExistsToast(numberMatch.name, numberMatch.number);
+      setFormError(
+        `The number "${number}" is already used for "${numberMatch.name}".`
+      );
       return;
     }
 
-    dispatch(addContact({ name, number }));
-    dispatch(resetFilter());
-    actions.resetForm();
+    setFormError("");
+    try {
+      await dispatch(addContact({ name, number })).unwrap();
+      dispatch(resetFilter());
+      actions.resetForm();
+    } catch {
+      setFormError("Failed to add contact. Please try again later.");
+    }
   };
 
   return (
@@ -64,7 +68,22 @@ export default function ContactForm() {
     >
       {({ errors, touched }) => (
         <Form className={css.form}>
-            <h4> Add new contacts:</h4>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h5" align="center" gutterBottom>
+              Add a New Contact
+            </Typography>
+            <Typography variant="body1" align="center" color="textSecondary">
+              Please fill in the form below to add a new contact to your phonebook.
+              Make sure the name and number are unique.
+            </Typography>
+          </Box>
+
+          {formError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {formError}
+            </Alert>
+          )}
+
           <Box className={css.group}>
             <Field name="name">
               {({ field }) => (
@@ -111,4 +130,5 @@ export default function ContactForm() {
     </Formik>
   );
 }
+
 

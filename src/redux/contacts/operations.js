@@ -2,8 +2,6 @@ import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   showAddSuccessToast,
-  showNameExistsToast,
-  showNumberExistsToast,
   showDeleteSuccessToast,
 } from "../../utils/toasts.js";
 import { toast } from "react-hot-toast";
@@ -30,20 +28,6 @@ export const addContact = createAsyncThunk(
       showAddSuccessToast(newContact.name);
       return data;
     } catch (error) {
-      if (error.response && error.response.data) {
-        const errorMessage = error.response.data.message;
-
-        if (errorMessage.includes("Name already exists")) {
-          showNameExistsToast();
-        } else if (errorMessage.includes("Number already exists")) {
-          showNumberExistsToast();
-        } else {
-          toast.error("Failed to add contact. Please try again later.");
-        }
-      } else {
-        toast.error("Failed to add contact. Please try again later.");
-      }
-
       return thunkAPI.rejectWithValue(error.message);
     }
   }
